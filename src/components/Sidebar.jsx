@@ -16,7 +16,7 @@ export default function Sidebar() {
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon">
-          <Shield size={18} color="white" />
+          <img src="/logo.png" alt="AegisChain Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         {!isCollapsed && <h1>AegisChain</h1>}
       </div>

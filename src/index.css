@@ -543,15 +543,14 @@ input, select, textarea {
 }
 
 .sidebar-logo-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
   position: relative;
+  overflow: hidden;
 }
 
 .sidebar-logo-icon::before {
