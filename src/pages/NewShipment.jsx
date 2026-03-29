@@ -13,6 +13,11 @@ const STEPS = [
   { id: 3, label: 'Route & Compliance' },
   { id: 4, label: 'Final Review' }
 ]
+const STEP_CONTINUE_LABELS = {
+  1: 'Continue to 3D Fitting',
+  2: 'Continue to Route & Compliance',
+  3: 'Continue to Final Review',
+}
 
 const CARGO_TYPES = ['Electronics', 'Pharmaceuticals', 'Perishables', 'Hazardous Materials', 'General Cargo']
 const VEHICLE_CATEGORIES = ['Heavy', 'Mid', 'Light']
@@ -59,6 +64,27 @@ function validateShipmentForm(formData) {
   if (!formData.origin || !formData.destination) return 'Origin and destination are required.'
   if (toPositiveNumber(formData.quantity, 0) <= 0) return 'Quantity must be greater than 0.'
   if (toPositiveNumber(formData.weight, 0) <= 0) return 'Weight must be greater than 0.'
+  return ''
+}
+
+function validateStepTransition(step, formData, packingPreview, isPreviewLoading, previewError) {
+  if (step === 1) {
+    if (!formData.cargoType) return 'Select a cargo type to continue.'
+    if (toPositiveNumber(formData.quantity, 0) <= 0) return 'Enter quantity to continue.'
+    if (toPositiveNumber(formData.weight, 0) <= 0) return 'Enter total weight to continue.'
+  }
+
+  if (step === 2) {
+    if (isPreviewLoading) return 'Wait for 3D analysis to finish before continuing.'
+    if (previewError) return 'Resolve the 3D analysis issue or rerun Analyze before continuing.'
+    if (!packingPreview) return 'Run Analyze in 3D Fitting before continuing.'
+  }
+
+  if (step === 3) {
+    if (!formData.origin) return 'Enter an origin to continue.'
+    if (!formData.destination) return 'Enter a destination to continue.'
+  }
+
   return ''
 }
 
@@ -194,6 +220,7 @@ export default function NewShipment() {
   const [packagingPreview, setPackagingPreview] = useState(null)
   const [isPackagingLoading, setIsPackagingLoading] = useState(false)
   const [packagingError, setPackagingError] = useState('')
+  const [stepNavigationError, setStepNavigationError] = useState('')
   
   const [formData, setFormData] = useState({
     cargoType: '',
@@ -212,6 +239,7 @@ export default function NewShipment() {
   const handleInputChange = (field, value) => {
     const shouldResetPreview = ['cargoType', 'materialPreference', 'quantity', 'weight', 'hazardous', 'vehicleCategory'].includes(field)
     const shouldResetPackaging = ['cargoType', 'materialPreference', 'quantity', 'weight', 'hazardous'].includes(field)
+    setStepNavigationError('')
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -228,13 +256,27 @@ export default function NewShipment() {
   }
 
   const handleNext = () => {
+    const validationError = validateStepTransition(
+      currentStep,
+      formData,
+      packingPreview,
+      isPreviewLoading,
+      previewError,
+    )
+    if (validationError) {
+      setStepNavigationError(validationError)
+      return
+    }
+
     if (currentStep < 4) {
+      setStepNavigationError('')
       setCurrentStep(currentStep + 1)
     }
   }
 
   const handleBack = () => {
     if (currentStep > 1) {
+      setStepNavigationError('')
       setCurrentStep(currentStep - 1)
     }
   }
@@ -504,15 +546,27 @@ export default function NewShipment() {
             />
           )}
 
-          {currentStep !== 2 && (
-            <div className="form-actions">
+          <div className="form-actions">
+            {stepNavigationError ? (
+              <div className="form-actions-message" role="alert">
+                {stepNavigationError}
+              </div>
+            ) : (
+              <div />
+            )}
+            <div className="form-actions-buttons">
               {currentStep > 1 && (
                 <button className="btn btn-secondary" onClick={handleBack}>
                   Back
                 </button>
               )}
+              {currentStep < 4 && (
+                <button className="btn btn-primary" onClick={handleNext}>
+                  {STEP_CONTINUE_LABELS[currentStep] || 'Continue'}
+                </button>
+              )}
             </div>
-          )}
+          </div>
         </div>
       ) : (
         <ExecutionPipeline runId={dispatchRunId} />
