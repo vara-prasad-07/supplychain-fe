@@ -97,13 +97,13 @@ export default function Packing3DView({ truckDimensions, positions, height = 340
     scene.add(grid)
 
     const containerGeometry = new THREE.BoxGeometry(truckLength, truckHeight, truckWidth)
-    const containerMaterial = new THREE.MeshPhysicalMaterial({
+    const containerMaterial = new THREE.MeshStandardMaterial({
       color: 0x88aaff,
       transparent: true,
-      opacity: 0.09,
+      opacity: 0.11,
       roughness: 0.9,
       metalness: 0.1,
-      transmission: 0.2,
+      depthWrite: false,
     })
     const containerMesh = new THREE.Mesh(containerGeometry, containerMaterial)
     containerMesh.position.set(truckLength / 2, truckHeight / 2, truckWidth / 2)
@@ -146,11 +146,6 @@ export default function Packing3DView({ truckDimensions, positions, height = 340
       outline.position.copy(mesh.position)
       scene.add(outline)
     })
-
-    // Add XYZ axis helper for rotation control
-    const axesHelper = new THREE.AxesHelper(Math.max(truckLength, truckWidth, truckHeight) * 0.8)
-    axesHelper.position.set(0, 0, 0)
-    scene.add(axesHelper)
 
     let frameId = 0
     const animate = () => {

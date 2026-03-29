@@ -227,8 +227,8 @@ input, select, textarea {
 
 .card {
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--blur-md));
-  -webkit-backdrop-filter: blur(var(--blur-md));
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
@@ -238,6 +238,8 @@ input, select, textarea {
 
 .card:hover {
   background: var(--glass-hover);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
   border-color: var(--border-accent);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
@@ -648,22 +650,6 @@ input, select, textarea {
   gap: var(--space-3);
 }
 
-.sidebar-status {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3);
-  background: var(--success-bg);
-  border-radius: var(--radius-md);
-  font-size: 0.75rem;
-  color: var(--success);
-}
-
-.sidebar.collapsed .sidebar-status {
-  padding: var(--space-2);
-}
-
 .sidebar-toggle-btn {
   display: flex;
   align-items: center;
@@ -684,14 +670,6 @@ input, select, textarea {
   background: var(--primary-glow);
   color: var(--primary-light);
   border-color: var(--border-accent);
-}
-
-.sidebar-status-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--success);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
 }
 
 .sidebar-system-health {
@@ -996,8 +974,8 @@ input, select, textarea {
 
 .kpi-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--blur-md));
-  -webkit-backdrop-filter: blur(var(--blur-md));
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
@@ -1031,6 +1009,8 @@ input, select, textarea {
 
 .kpi-card:hover {
   background: var(--glass-hover);
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
   border-color: var(--border-accent);
   transform: translateY(-4px);
   box-shadow: var(--shadow-glow);

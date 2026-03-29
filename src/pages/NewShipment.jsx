@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Package, Truck, Route, CheckCircle, AlertTriangle, Shield, MapPin, Clock, DollarSign, Zap, Info, PanelRightOpen, PanelRightClose } from 'lucide-react'
+import { Package, Truck, Route, CheckCircle, AlertTriangle, Shield, MapPin, Clock, DollarSign, Zap, Info, PanelRightOpen, PanelRightClose, Maximize2, Minimize2 } from 'lucide-react'
 import { ApiError, previewLogistics, runPackaging, runPipeline } from '../lib/api'
 import Packing3DView from '../components/Packing3DView'
 import WorkflowFlowchart from '../components/WorkflowFlowchart'
@@ -472,7 +472,7 @@ export default function NewShipment() {
       )}
 
       {!isProcessing ? (
-        <div className={currentStep === 2 ? '' : 'shipment-form-container'}>
+        <div className="shipment-form-container">
           {currentStep === 1 && (
             <Step1
               formData={formData}
@@ -815,6 +815,51 @@ function Step2({
   const unpackedCount = selectedResult?.unpacked_items?.length || 0
   const spaceUtil = selectedResult?.space_utilization_pct || 0
   const weightUtil = selectedResult?.weight_utilization_pct || 0
+  const [isViewerFullscreen, setIsViewerFullscreen] = useState(false)
+  const [viewerHeight, setViewerHeight] = useState(560)
+
+  useEffect(() => {
+    const updateViewerHeight = () => {
+      if (typeof window === 'undefined') {
+        setViewerHeight(560)
+        return
+      }
+
+      const nextHeight = isViewerFullscreen ? Math.max(460, window.innerHeight - 120) : 560
+      setViewerHeight(nextHeight)
+    }
+
+    updateViewerHeight()
+    window.addEventListener('resize', updateViewerHeight)
+    return () => {
+      window.removeEventListener('resize', updateViewerHeight)
+    }
+  }, [isViewerFullscreen])
+
+  useEffect(() => {
+    if (!isViewerFullscreen) {
+      return undefined
+    }
+
+    const previousOverflow = document.body.style.overflow
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsViewerFullscreen(false)
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [isViewerFullscreen])
+
+  const toggleViewerFullscreen = () => {
+    setIsViewerFullscreen((current) => !current)
+  }
 
   return (
     <div className="step-content-fullscreen">
@@ -837,11 +882,21 @@ function Step2({
         </div>
 
         {/* Fullscreen 3D Viewport */}
-        <div className="viewport-3d-fullscreen">
+        <div className={`viewport-3d-fullscreen ${isViewerFullscreen ? 'is-maximized' : ''}`}>
+          <button
+            className="viewport-expand-btn"
+            type="button"
+            onClick={toggleViewerFullscreen}
+            aria-pressed={isViewerFullscreen}
+            aria-label={isViewerFullscreen ? 'Minimize 3D viewport' : 'Maximize 3D viewport'}
+          >
+            {isViewerFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            <span>{isViewerFullscreen ? 'Minimize' : 'Maximize'}</span>
+          </button>
           <Packing3DView
             truckDimensions={truckDimensions}
             positions={selectedResult?.positions || []}
-            height={600}
+            height={viewerHeight}
           />
           {!selectedResult && !isPreviewLoading ? (
             <div
@@ -908,6 +963,10 @@ function Step2({
             <button className="viewport-control-btn" type="button">
               <Package size={14} />
               <span>Drag to Orbit</span>
+            </button>
+            <button className="viewport-control-btn" type="button" onClick={toggleViewerFullscreen}>
+              {isViewerFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+              <span>{isViewerFullscreen ? 'Minimize' : 'Fullscreen'}</span>
             </button>
             <button
               className="viewport-control-btn"

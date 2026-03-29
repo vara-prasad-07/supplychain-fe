@@ -42,10 +42,6 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="sidebar-status">
-          <span className="sidebar-status-dot" />
-          {!isCollapsed && 'All Systems Operational'}
-        </div>
         <button 
           className="sidebar-toggle-btn"
           onClick={() => setIsCollapsed(!isCollapsed)}
